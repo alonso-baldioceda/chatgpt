@@ -1,12 +1,15 @@
-import React, { useState, useRef, useEffect } from "react"
+import React, { useState, useRef } from "react"
+import axios from "axios"
 import "./../style.css"
-import bot from "./../images/bot.svg"
-import user from "./../images/user.svg"
 
 // Components
 import PromptsList from "./../components/PromptsList"
 import Send from "../components/Send"
 import Textarea from "./../components/Textarea"
+
+// Utils
+import chatStripe from "../utils/chatStripe"
+import generateUniqueId from "../utils/generateUniqueId"
 
 const prompts = [
   {
@@ -58,7 +61,7 @@ const prompts = [
 
 const IndexPage = () => {
   const formRef = useRef(null)
-  const [selectedPrompt, setSelectedPrompt] = useState(null)
+  // const [isLoading, setIsLoading] = useState(true)
   const [inputValue, setInputValue] = useState("")
 
   const handleReset = () => formRef.current.reset()
@@ -69,15 +72,8 @@ const IndexPage = () => {
     setInputValue(question)
   }
 
-  useEffect(() => {
-    console.log(inputValue)
-  }, [inputValue])
-
   const form = document.querySelector("form")
-  const chatContainer = document.querySelector("#chat_container")
-  const field = document.querySelector("#prompt")
-
-  console.log("field", field)
+  const chatContainer = document.querySelector("#chat-container")
 
   let loadInterval
 
@@ -95,68 +91,43 @@ const IndexPage = () => {
     }, 300)
   }
 
-  const generateUniqueId = () => {
-    const timestamp = Date.now()
-    const randomNumber = Math.random()
-    const hexadecimalString = randomNumber.toString(16)
-
-    return `id-${timestamp}-${hexadecimalString}`
-  }
-
-  const chatStripe = (isAi, value, uniqueId) => {
-    return `
-          <div class="wrapper ${isAi && "ai"}">
-              <div class="chat">
-                  <div class="profile">
-                      <img 
-                        src=${isAi ? bot : user} 
-                        alt="${isAi ? "bot" : "user"}" 
-                      />
-                  </div>
-                  <div class="message" id=${uniqueId}>${value}</div>
-              </div>
-          </div>
-      `
-  }
+  // console.log("key", process.env.OPENAI_API_KEY)
 
   const handleSubmit = async e => {
     e.preventDefault()
 
-    // const data = new FormData(form)
-
     // user's chatstripe
-    // chatContainer.innerHTML += chatStripe(false, data.get("prompt"))
+    chatContainer.innerHTML += chatStripe(false, inputValue)
 
     // to clear the textarea input
-    // form.reset()
+    handleReset()
+    document.querySelector("#prompt").innerHTML = ""
 
     // bot's chatstripe
     const uniqueId = generateUniqueId()
-
-    console.log("uniqueId", uniqueId)
-    // chatContainer.innerHTML += chatStripe(true, " ", uniqueId)
+    chatContainer.innerHTML += chatStripe(true, " ", uniqueId)
 
     // to focus scroll to the bottom
-    // chatContainer.scrollTop = chatContainer.scrollHeight
+    chatContainer.scrollTop = chatContainer.scrollHeight
 
     // specific message div
-    // const messageDiv = document.getElementById(uniqueId)
+    const messageDiv = document.getElementById(uniqueId)
 
-    // messageDiv.innerHTML = "..."
-    // loader(messageDiv)
+    messageDiv.innerHTML = "..."
+    loader(messageDiv)
 
-    // const response = await fetch("http://localhost:5000/", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     prompt: data.get("prompt"),
-    //   }),
-    // })
+    const response = await fetch("http://localhost:5001/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: "how are you?",
+      }),
+    })
 
-    // clearInterval(loadInterval)
-    // messageDiv.innerHTML = " "
+    clearInterval(loadInterval)
+    messageDiv.innerHTML = ""
 
     // if (response.ok) {
     //   const data = await response.json()
@@ -171,15 +142,13 @@ const IndexPage = () => {
     // }
   }
 
-  // console.log("inputValue ===>", inputValue)
-
   return (
     <div id="app">
       <div className="prompts">
         <PromptsList prompts={prompts} handleSelect={handlePromptSelect} />
       </div>
       <div className="dialog">
-        <div id="chat_container"></div>
+        <div id="chat-container"></div>
         <form ref={formRef}>
           <Textarea
             placeholder="Tab on prompt library of type here."

@@ -3,7 +3,7 @@ import styled from "styled-components"
 
 import Collapse from "./Collapse"
 
-const List = styled.ul`
+const PromptsWrapper = styled.div`
   list-style: none;
   margin: 10px 10px 20px;
   padding: 0;
@@ -17,14 +17,14 @@ const PromptsList = ({ handleSelect, prompts }) => {
 
   return prompts.map((prompt, index) => {
     return (
-      <List key={index}>
+      <PromptsWrapper key={index}>
         <Collapse
           prompt={{ ...prompt, index }}
           handleSelect={handleSelect}
           isOpen={isOpen[index]}
           setIsOpen={setIsOpen}
         />
-      </List>
+      </PromptsWrapper>
     )
   })
 }
