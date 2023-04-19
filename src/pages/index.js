@@ -1,35 +1,83 @@
-import React, { useState } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import "./../style.css"
 import bot from "./../images/bot.svg"
 import user from "./../images/user.svg"
-import Send from "./../images/send.svg"
 
 // Components
 import PromptsList from "./../components/PromptsList"
+import Send from "../components/Send"
+import Textarea from "./../components/Textarea"
+
+const prompts = [
+  {
+    heading: "Health",
+    questions: [
+      {
+        heading: "Better Sleep Tips",
+        question: "What are some tips for getting better sleep?",
+      },
+      {
+        heading: "Core Strengthening Exercises",
+        question: "What are the best exercises for strengthening your core?",
+      },
+      {
+        heading: "Effective Stress Management",
+        question: "How can I manage my stress levels effectively?",
+      },
+      {
+        heading: "Healthy Vegan Foods",
+        question:
+          "What are some healthy food options for people on a vegan diet?",
+      },
+    ],
+  },
+  {
+    heading: "Medicine",
+    questions: [
+      {
+        heading: "Medication Side Effects",
+        question: "What are the side effects of a particular medication?",
+      },
+      {
+        heading: "Proper Medication Usage",
+        question:
+          "How should I take a particular medication? Should it be taken with food or without?",
+      },
+      {
+        heading: "Over-the-Counter Pain Relief",
+        question:
+          "What over-the-counter pain relievers are safe to take for a headache?",
+      },
+      {
+        heading: "Natural Cold Remedies",
+        question: "Are there any herbal or natural remedies for a common cold?",
+      },
+    ],
+  },
+]
 
 const IndexPage = () => {
+  const formRef = useRef(null)
   const [selectedPrompt, setSelectedPrompt] = useState(null)
   const [inputValue, setInputValue] = useState("")
 
-  const handlePromptSelect = prompt => {
-    setSelectedPrompt(prompt)
+  const handleReset = () => formRef.current.reset()
 
-    console.log("selectedPrompt ==>", selectedPrompt)
+  const handlePromptSelect = question => {
+    handleReset()
+    document.querySelector("#prompt").innerHTML = question
+    setInputValue(question)
   }
 
-  const handleInputChange = event => {
-    setInputValue({ inputValue: event.target.value })
-  }
-
-  const prompts = [
-    "¿Cómo estás?",
-    "¿Qué planes tienes para hoy?",
-    "¿Qué música te gusta?",
-    "¿Dónde vives?",
-  ]
+  useEffect(() => {
+    console.log(inputValue)
+  }, [inputValue])
 
   const form = document.querySelector("form")
   const chatContainer = document.querySelector("#chat_container")
+  const field = document.querySelector("#prompt")
+
+  console.log("field", field)
 
   let loadInterval
 
@@ -45,19 +93,6 @@ const IndexPage = () => {
         element.textContent = ""
       }
     }, 300)
-  }
-
-  const typeText = (element, text) => {
-    let index = 0
-
-    let interval = setInterval(() => {
-      if (index < text.length) {
-        element.innerHTML += text.charAt(index)
-        index++
-      } else {
-        clearInterval(interval)
-      }
-    }, 20)
   }
 
   const generateUniqueId = () => {
@@ -84,8 +119,7 @@ const IndexPage = () => {
       `
   }
 
-  // const handleSubmit = async e => {
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault()
 
     // const data = new FormData(form)
@@ -137,7 +171,7 @@ const IndexPage = () => {
     // }
   }
 
-  console.log("selectedPrompt ==>", selectedPrompt)
+  // console.log("inputValue ===>", inputValue)
 
   return (
     <div id="app">
@@ -146,19 +180,13 @@ const IndexPage = () => {
       </div>
       <div className="dialog">
         <div id="chat_container"></div>
-        <form>
-          <textarea
-            name="prompt"
-            rows="1"
-            cols="1"
-            placeholder="Ask codex..."
+        <form ref={formRef}>
+          <Textarea
+            placeholder="Tab on prompt library of type here."
             value={inputValue}
-            onChange={handleInputChange}
-          ></textarea>
-          <button type="submit" onClick={handleSubmit}>
-            {/* send */}
-            <Send />
-          </button>
+            handleInputChange={setInputValue}
+          />
+          <Send handleSubmit={e => handleSubmit(e)} />
         </form>
       </div>
     </div>

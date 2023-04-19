@@ -5,14 +5,14 @@
   padding: 0;
   box-sizing: border-box;
   font-family: "Alegreya Sans", sans-serif;
+  font-size: 1rem;
 }
 
-body {
-  background: #343541;
-}
+/* body {
+  background: #fff;
+} */
 
 #app {
-  background: #343541;
   display: flex;
   flex-direction: row;
   height: 100vh;
@@ -20,29 +20,32 @@ body {
 }
 
 .prompts {
-  background-color: #1f1f1f;
+  background-color: #fff;
   width: 25%;
-} 
+}
 
 .dialog {
-  background-color: blue;
+  background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 10px;
+  /* gap: 10px; */
   height: 100%;
+  padding: 10px;
   width: 100%;
 }
 
 #chat_container {
+  background-color: #fff;
   -ms-overflow-style: none;
   display: flex;
   flex-direction: column;
   flex: 1;
-  gap: 10px;
+  /* gap: 10px; */
   height: 100%;
   overflow-y: scroll;
-  padding-bottom: 20px;
+  /* padding-bottom: 20px; */
+  /* margin: 20px; */
   scroll-behavior: smooth;
   scrollbar-width: none;
   width: 100%;
@@ -59,7 +62,7 @@ body {
 }
 
 .ai {
-  background: #40414F;
+  background: #40414f;
 }
 
 .chat {
@@ -74,7 +77,7 @@ body {
 
 .profile {
   align-items: center;
-  background: #5436DA;
+  background: #5436da;
   border-radius: 5px;
   display: flex;
   height: 36px;
@@ -107,7 +110,7 @@ body {
    * The pre-wrap value allows the browser to wrap long lines of text onto multiple lines if necessary.
    * The default value for the white-space property in CSS is "normal". This tells the browser to collapse multiple white space characters into a single space, and to wrap text onto multiple lines as needed to fit within its container.
   */
-  white-space: pre-wrap; 
+  white-space: pre-wrap;
 }
 
 /* hides scrollbar */
@@ -116,35 +119,10 @@ body {
 }
 
 form {
-  background: #40414F;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
+  background: #fff;
   margin: 0 auto;
   max-width: 1280px;
   padding: 10px;
+  position: relative;
   width: 100%;
-}
-
-textarea {
-  background: transparent;
-  border-radius: 5px;
-  border: none;
-  color: #fff;
-  font-size: 18px;
-  outline: none;
-  padding: 10px;
-  width: 100%;
-}
-
-button {
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  outline: 0;
-}
-
-form svg {
-  height: 30px;
-  width: 30px;
 }
