@@ -11,57 +11,90 @@ import Textarea from "./../components/Textarea"
 import chatStripe from "../utils/chatStripe"
 import generateUniqueId from "../utils/generateUniqueId"
 
-const prompts = [
-  {
-    heading: "Health",
-    questions: [
-      {
-        heading: "Better Sleep Tips",
-        question: "What are some tips for getting better sleep?",
-      },
-      {
-        heading: "Core Strengthening Exercises",
-        question: "What are the best exercises for strengthening your core?",
-      },
-      {
-        heading: "Effective Stress Management",
-        question: "How can I manage my stress levels effectively?",
-      },
-      {
-        heading: "Healthy Vegan Foods",
-        question:
-          "What are some healthy food options for people on a vegan diet?",
-      },
-    ],
-  },
-  {
-    heading: "Medicine",
-    questions: [
-      {
-        heading: "Medication Side Effects",
-        question: "What are the side effects of a particular medication?",
-      },
-      {
-        heading: "Proper Medication Usage",
-        question:
-          "How should I take a particular medication? Should it be taken with food or without?",
-      },
-      {
-        heading: "Over-the-Counter Pain Relief",
-        question:
-          "What over-the-counter pain relievers are safe to take for a headache?",
-      },
-      {
-        heading: "Natural Cold Remedies",
-        question: "Are there any herbal or natural remedies for a common cold?",
-      },
-    ],
-  },
-]
-
 const IndexPage = () => {
+  const data = {
+    prompts: [
+      {
+        heading: "Health",
+        sub: [
+          {
+            heading: "General health",
+            questions: [
+              {
+                heading: "Better Sleep Tips",
+                question: "What are some tips for getting better sleep?",
+              },
+              {
+                heading: "Core Strengthening Exercises",
+                question:
+                  "What are the best exercises for strengthening your core?",
+              },
+              {
+                heading: "Effective Stress Management",
+                question: "How can I manage my stress levels effectively?",
+              },
+              {
+                heading: "Healthy Vegan Foods",
+                question:
+                  "What are some healthy food options for people on a vegan diet?",
+              },
+            ],
+          },
+          {
+            heading: "Mental health",
+            questions: [
+              {
+                heading: "Managing mental illness effectively",
+                question:
+                  "What are some effective ways to manage anxiety or depression?",
+              },
+              {
+                heading: "Reducing mental health stigma",
+                question:
+                  "How can we reduce the stigma surrounding mental health issues and encourage more people to seek treatment?",
+              },
+              {
+                heading: "Preventing mental health crises",
+                question:
+                  "What are the most common warning signs of a mental health crisis, and how can loved ones help someone who may be struggling?",
+              },
+              {
+                heading: "Dispelling mental health misconceptions",
+                question:
+                  "What are some of the most common myths and misconceptions about mental health, and how can we educate people to dispel these beliefs?",
+              },
+            ],
+          },
+        ],
+      },
+      {
+        heading: "Medicine",
+        questions: [
+          {
+            heading: "Medication Side Effects",
+            question: "What are the side effects of a particular medication?",
+          },
+          {
+            heading: "Proper Medication Usage",
+            question:
+              "How should I take a particular medication? Should it be taken with food or without?",
+          },
+          {
+            heading: "Over-the-Counter Pain Relief",
+            question:
+              "What over-the-counter pain relievers are safe to take for a headache?",
+          },
+          {
+            heading: "Natural Cold Remedies",
+            question:
+              "Are there any herbal or natural remedies for a common cold?",
+          },
+        ],
+      },
+    ],
+  }
+
   const formRef = useRef(null)
-  // const [isLoading, setIsLoading] = useState(true)
   const [inputValue, setInputValue] = useState("")
 
   const handleReset = () => formRef.current.reset()
@@ -116,18 +149,18 @@ const IndexPage = () => {
     messageDiv.innerHTML = "..."
     loader(messageDiv)
 
-    const response = await fetch("http://localhost:5001/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt: "how are you?",
-      }),
-    })
+    // const response = await fetch("http://localhost:5001/", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify({
+    //     prompt: "how are you?",
+    //   }),
+    // })
 
-    clearInterval(loadInterval)
-    messageDiv.innerHTML = ""
+    // clearInterval(loadInterval)
+    // messageDiv.innerHTML = ""
 
     // if (response.ok) {
     //   const data = await response.json()
@@ -142,10 +175,13 @@ const IndexPage = () => {
     // }
   }
 
+  // console.log("data", data.prompts)
+
   return (
     <div id="app">
+      {/* logo && chat GPT internal demo */}
       <div className="prompts">
-        <PromptsList prompts={prompts} handleSelect={handlePromptSelect} />
+        <PromptsList prompts={data.prompts} handleSelect={handlePromptSelect} />
       </div>
       <div className="dialog">
         <div id="chat-container"></div>
