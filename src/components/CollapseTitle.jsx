@@ -24,15 +24,11 @@ const Heading = styled.h3`
   font-size: 1.1rem;
 `
 
-const CollapseTitle = ({ onClick, text, row, column }) => {
-  // console.log("CollapseTitle ===>", row, column)
-
-  return (
-    <Title onClick={() => onClick(row, column)}>
-      <Heading>{text}</Heading>
-      {/* <Caret className={state ? "expanded" : ""} /> */}
-    </Title>
-  )
-}
+const CollapseTitle = ({ handleToggle, text, index, subIndex, isActive }) => (
+  <Title onClick={() => handleToggle(index, subIndex)}>
+    <Heading>{text}</Heading>
+    <Caret className={isActive ? "expanded" : ""} />
+  </Title>
+)
 
 export default CollapseTitle

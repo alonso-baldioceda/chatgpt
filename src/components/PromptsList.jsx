@@ -1,11 +1,8 @@
-import React, { useState } from "react"
+import React, { useState, useMemo } from "react"
 import styled from "styled-components"
 
 // Components
 import Collapse from "./Collapse"
-
-// Utils
-import generateUniqueId from "../utils/generateUniqueId"
 
 const PromptsWrapper = styled.div`
   list-style: none;
@@ -14,36 +11,41 @@ const PromptsWrapper = styled.div`
 `
 
 const PromptsList = ({ handleSelect, prompts }) => {
-  // Track the open state of each collapse element
-  const generateBooleans = data => {
-    const arr = []
+  const initialOpenState = useMemo(
+    () =>
+      prompts.map((prompt, index) => {
+        const subArr = prompt.sub ? prompt.sub.map(() => false) : []
+        return [index === 0, subArr]
+      }),
+    [prompts]
+  )
 
-    data.forEach(prompt => {
-      if (prompt.sub) {
-        const subArr = prompt.sub.map(() => false)
-        arr.push([false, [subArr]])
-      } else {
-        arr.push([false])
-      }
-    })
+  const [isOpen, setIsOpen] = useState(initialOpenState)
 
-    return arr
+  const handleToggle = (promptIndex, subPromptIndex = null) => {
+    const newState = [...isOpen]
+    if (subPromptIndex === null) {
+      newState[promptIndex][0] = !newState[promptIndex][0]
+    } else {
+      newState[promptIndex][1][subPromptIndex] =
+        !newState[promptIndex][1][subPromptIndex]
+    }
+    setIsOpen(newState)
+    console.log("isOpen ===>", isOpen)
   }
 
-  const [isOpen, setIsOpen] = useState(generateBooleans(prompts))
-
-  // console.log("generateBooleans(prompts) ===>", generateBooleans(prompts))
-
   return prompts.map((prompt, index) => {
-    const indexId = generateUniqueId()
+    const isOpenPrompt = isOpen[index][0]
+    const isOpenSubPrompts = isOpen[index][1]
 
     return (
-      <PromptsWrapper key={indexId}>
+      <PromptsWrapper key={`propmpts-wrapper-${index}`}>
         <Collapse
           prompt={{ ...prompt, index }}
           handleSelect={handleSelect}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          handleToggle={handleToggle}
+          isOpenPrompt={isOpenPrompt}
+          isOpenSubPrompts={isOpenSubPrompts}
         />
       </PromptsWrapper>
     )
