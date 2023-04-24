@@ -19,7 +19,7 @@ const Collapse = ({
   isOpenPrompt,
   isOpenSubPrompts,
 }) => (
-  <div>
+  <div className="collapsable-main">
     <CollapseTitle
       handleToggle={handleToggle}
       text={heading}
@@ -29,7 +29,7 @@ const Collapse = ({
     {isOpenPrompt === true && (
       <>
         {sub?.map((sub, indexList) => (
-          <List key={`prompt-list-${indexList}`}>
+          <div className="collapsable-secondary" key={`title-${indexList}`}>
             <CollapseTitle
               handleToggle={handleToggle}
               text={sub.heading}
@@ -38,7 +38,7 @@ const Collapse = ({
               isActive={isOpenSubPrompts[indexList]}
             />
             {isOpenSubPrompts[indexList] === true && (
-              <>
+              <List key={`prompt-list-${indexList}`}>
                 {sub.questions?.map((question, indexQuestion) => (
                   <CollapseList
                     key={`question-list-${indexQuestion}`}
@@ -46,9 +46,9 @@ const Collapse = ({
                     handleSelect={handleSelect}
                   />
                 ))}
-              </>
+              </List>
             )}
-          </List>
+          </div>
         ))}
         <List>
           {questions?.map((question, indexQuestion) => (

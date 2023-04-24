@@ -13,8 +13,8 @@ const PromptsWrapper = styled.div`
 const PromptsList = ({ handleSelect, prompts }) => {
   const initialOpenState = useMemo(
     () =>
-      prompts.map((prompt, index) => {
-        const subArr = prompt.sub ? prompt.sub.map(() => false) : []
+      Array.from(prompts, (prompt, index) => {
+        const subArr = prompt.sub ? Array(prompt.sub.length).fill(false) : []
         return [index === 0, subArr]
       }),
     [prompts]
@@ -23,33 +23,36 @@ const PromptsList = ({ handleSelect, prompts }) => {
   const [isOpen, setIsOpen] = useState(initialOpenState)
 
   const handleToggle = (promptIndex, subPromptIndex = null) => {
-    const newState = [...isOpen]
+    const updatedStates = [...isOpen]
+    const [isPromptOpen, subPromptStates] = updatedStates[promptIndex]
     if (subPromptIndex === null) {
-      newState[promptIndex][0] = !newState[promptIndex][0]
+      updatedStates[promptIndex] = [!isPromptOpen, subPromptStates]
     } else {
-      newState[promptIndex][1][subPromptIndex] =
-        !newState[promptIndex][1][subPromptIndex]
+      subPromptStates[subPromptIndex] = !subPromptStates[subPromptIndex]
+      updatedStates[promptIndex] = [isPromptOpen, subPromptStates]
     }
-    setIsOpen(newState)
-    console.log("isOpen ===>", isOpen)
+    setIsOpen(updatedStates)
   }
 
-  return prompts.map((prompt, index) => {
-    const isOpenPrompt = isOpen[index][0]
-    const isOpenSubPrompts = isOpen[index][1]
+  return (
+    <PromptsWrapper>
+      {prompts.map((prompt, index) => {
+        const isOpenPrompt = isOpen[index][0]
+        const isOpenSubPrompts = isOpen[index][1]
 
-    return (
-      <PromptsWrapper key={`propmpts-wrapper-${index}`}>
-        <Collapse
-          prompt={{ ...prompt, index }}
-          handleSelect={handleSelect}
-          handleToggle={handleToggle}
-          isOpenPrompt={isOpenPrompt}
-          isOpenSubPrompts={isOpenSubPrompts}
-        />
-      </PromptsWrapper>
-    )
-  })
+        return (
+          <Collapse
+            key={`prompts-wrapper-${index}`}
+            prompt={{ ...prompt, index }}
+            handleSelect={handleSelect}
+            handleToggle={handleToggle}
+            isOpenPrompt={isOpenPrompt}
+            isOpenSubPrompts={isOpenSubPrompts}
+          />
+        )
+      })}
+    </PromptsWrapper>
+  )
 }
 
 export default PromptsList
