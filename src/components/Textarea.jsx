@@ -11,7 +11,12 @@ const Input = styled.textarea`
   width: 100%;
 `
 
-const Textarea = ({ placeholder, inputValue, handleInputChange }) => {
+const Textarea = ({
+  placeholder,
+  inputValue,
+  handleInputChange,
+  handleKeyDown,
+}) => {
   return (
     <Input
       name="prompt"
@@ -20,7 +25,8 @@ const Textarea = ({ placeholder, inputValue, handleInputChange }) => {
       cols="1"
       placeholder={placeholder}
       value={inputValue}
-      onChange={e => handleInputChange(e.target.value)}
+      onChange={e => handleInputChange(e)}
+      onKeyDown={e => handleKeyDown(e)}
     />
   )
 }

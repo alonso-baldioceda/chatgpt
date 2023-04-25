@@ -1,4 +1,4 @@
-const generateUniqueId = () => {
+const generateBotMessageId = () => {
   const timestamp = Date.now()
   const randomNumber = Math.random()
   const hexadecimalString = randomNumber.toString(16)
@@ -6,4 +6,4 @@ const generateUniqueId = () => {
   return `id-${timestamp}-${hexadecimalString}`
 }
 
-export default generateUniqueId
+export default generateBotMessageId

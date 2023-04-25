@@ -3,10 +3,10 @@ import styled from "styled-components"
 import Arrow from "./../images/arrow.svg"
 
 const Caret = styled(Arrow)`
-  height: 20px;
-  margin-left: 10px;
+  height: 16px;
+  margin-left: 6px;
   transform: rotate(90deg);
-  width: 20px;
+  width: 16px;
 
   &.expanded {
     transform: rotate(270deg);

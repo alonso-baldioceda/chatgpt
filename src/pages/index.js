@@ -1,15 +1,15 @@
 import React, { useState, useRef } from "react"
-import axios from "axios"
 import "./../style.css"
 
 // Components
 import PromptsList from "./../components/PromptsList"
 import Send from "../components/Send"
 import Textarea from "./../components/Textarea"
+import Loader from "./../components/Loader"
 
 // Utils
 import chatStripe from "../utils/chatStripe"
-import generateUniqueId from "../utils/generateUniqueId"
+import generateBotMessageId from "../utils/generateBotMessageId"
 
 const IndexPage = () => {
   const data = {
@@ -100,31 +100,34 @@ const IndexPage = () => {
   const handleReset = () => formRef.current.reset()
 
   const handlePromptSelect = question => {
+    const input = document.querySelector("#prompt")
     handleReset()
-    document.querySelector("#prompt").innerHTML = question
+    input.innerHTML = question
+    input.focus()
     setInputValue(question)
+
+    // Move cursor to the end of the textarea
+    const length = input.value.length
+    input.selectionStart = length
+    input.selectionEnd = length
   }
 
-  const form = document.querySelector("form")
   const chatContainer = document.querySelector("#chat-container")
 
   let loadInterval
 
-  const loader = element => {
-    element.textContent = ""
+  const typeText = (element, text) => {
+    let index = 0
 
-    loadInterval = setInterval(() => {
-      // Update the text content of the loading indicator
-      element.textContent += "."
-
-      // If the loading indicator has reached three dots, reset it
-      if (element.textContent === "....") {
-        element.textContent = ""
+    let interval = setInterval(() => {
+      if (index < text.length) {
+        element.innerHTML += text.charAt(index)
+        index++
+      } else {
+        clearInterval(interval)
       }
-    }, 300)
+    }, 20)
   }
-
-  // console.log("key", process.env.OPENAI_API_KEY)
 
   const handleSubmit = async e => {
     e.preventDefault()
@@ -137,45 +140,59 @@ const IndexPage = () => {
     document.querySelector("#prompt").innerHTML = ""
 
     // bot's chatstripe
-    const uniqueId = generateUniqueId()
-    chatContainer.innerHTML += chatStripe(true, " ", uniqueId)
+    const botMessageId = generateBotMessageId()
+    chatContainer.innerHTML += chatStripe(true, " ", botMessageId)
 
     // to focus scroll to the bottom
     chatContainer.scrollTop = chatContainer.scrollHeight
 
     // specific message div
-    const messageDiv = document.getElementById(uniqueId)
+    const messageDiv = document.getElementById(botMessageId)
 
-    messageDiv.innerHTML = "..."
-    loader(messageDiv)
+    // loading spinner position
+    const rect = messageDiv.getBoundingClientRect()
+    const spinner = document.querySelector("#spinner")
+    spinner.style = `top: ${rect.top}px; display: block;`
 
-    // const response = await fetch("http://localhost:5001/", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify({
-    //     prompt: "how are you?",
-    //   }),
-    // })
+    try {
+      const response = await fetch("http://localhost:5001/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: inputValue,
+        }),
+      })
 
-    // clearInterval(loadInterval)
-    // messageDiv.innerHTML = ""
+      if (response.ok) {
+        clearInterval(loadInterval)
+        messageDiv.innerHTML = ""
 
-    // if (response.ok) {
-    //   const data = await response.json()
-    //   const parsedData = data.bot.trim() // trims any trailing spaces/'\n'
+        const data = await response.json()
+        const parsedData = data.bot.trim()
 
-    //   typeText(messageDiv, parsedData)
-    // } else {
-    //   const err = await response.text()
-
-    //   messageDiv.innerHTML = "Something went wrong"
-    //   alert(err)
-    // }
+        typeText(messageDiv, parsedData)
+      } else {
+        const errorMessage = await response.text()
+        throw new Error(errorMessage)
+      }
+    } catch (error) {
+      console.error(error)
+      messageDiv.innerHTML = "Sorry, something went wrong. Please try again."
+    } finally {
+      clearInterval(loadInterval)
+      spinner.style.display = "none"
+      console.log("finally")
+    }
   }
 
-  // console.log("data", data.prompts)
+  const handleKeyDown = e => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleSubmit(e)
+    }
+  }
 
   return (
     <div id="app">
@@ -185,11 +202,13 @@ const IndexPage = () => {
       </div>
       <div className="dialog">
         <div id="chat-container"></div>
+        <Loader />
         <form ref={formRef}>
           <Textarea
             placeholder="Tab on prompt library of type here."
             value={inputValue}
             handleInputChange={setInputValue}
+            handleKeyDown={handleKeyDown}
           />
           <Send handleSubmit={e => handleSubmit(e)} />
         </form>

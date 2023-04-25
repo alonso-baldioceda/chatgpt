@@ -1,4 +1,4 @@
-const chatStripe = (isAi, value, uniqueId) => {
+const chatStripe = (isAi, value, botMessageId) => {
   return `
     <div class="wrapper ${isAi && "ai"}">
       <div class="chat">
@@ -8,7 +8,7 @@ const chatStripe = (isAi, value, uniqueId) => {
             alt="${isAi ? "bot" : "user"}" 
           />
         </div>
-        <div class="message" id=${uniqueId}>${value}</div>
+        <div class="message" id=${botMessageId}>${value}</div>
       </div>
     </div>
   `

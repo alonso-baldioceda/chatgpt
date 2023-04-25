@@ -1,41 +1,44 @@
 import React from "react"
 import styled from "styled-components"
 
-const LoaderWrapper = styled.div`
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  height: 100%;
-  justify-content: center;
-  left: 0;
-  position: fixed;
-  top: 0;
-  width: 100%;
+const Spinner = styled.div`
+  display: none;
+  left: 74px;
+  position: absolute;
+  transform: translateZ(1px);
 
-  .spinner {
-    animation: spin 0.8s ease-in-out infinite;
+  div {
+    animation: spinner 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    background: #76d376;
     border-radius: 50%;
-    border-top: 4px solid #ccc;
-    border: 4px solid #fff;
-    height: 30px;
-    width: 30px;
+    display: inline-block;
+    height: 36px;
+    width: 36px;
   }
 
-  @keyframes spin {
+  @keyframes spinner {
+    0%,
+    100% {
+      animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
+    }
     0% {
-      transform: rotate(0deg);
+      transform: rotateY(0deg);
+    }
+    50% {
+      animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
+      transform: rotateY(1800deg);
     }
     100% {
-      transform: rotate(360deg);
+      transform: rotateY(3600deg);
     }
   }
 `
 
 const Loader = () => {
   return (
-    <LoaderWrapper>
-      <div className="spinner"></div>
-    </LoaderWrapper>
+    <Spinner className="spinner" id="spinner">
+      <div></div>
+    </Spinner>
   )
 }
 
