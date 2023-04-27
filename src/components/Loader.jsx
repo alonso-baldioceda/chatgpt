@@ -3,13 +3,13 @@ import styled from "styled-components"
 
 const Spinner = styled.div`
   display: block;
+  height: 36px;
   left: 74px;
+  overflow: hidden;
   position: absolute;
   transform: translateZ(1px);
-  z-index: 1;
-  height: 36px;
   width: 36px;
-  overflow: hidden;
+  z-index: 1;
 
   div {
     animation: spinner 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;

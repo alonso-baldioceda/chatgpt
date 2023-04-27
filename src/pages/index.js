@@ -1,25 +1,33 @@
-import React, { useState, useRef, useEffect, useCallback } from "react"
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { graphql } from "gatsby"
 import "./../style.css"
 
 // Components
-import PromptsList from "./../components/PromptsList"
-import Send from "../components/Send"
-import Textarea from "./../components/Textarea"
-import Loader from "./../components/Loader"
-import ChatStripe from "./../components/ChatStripe"
+import PromptsDesktop from "../components/PromptsDesktop"
+import PromptsMobile from "../components/PromptsMobile"
+import Dialog from "../components/Dialog"
 
 // Utils
 import generateBotMessageId from "../utils/generateBotMessageId"
 
 const IndexPage = ({ data }) => {
+  // getting the prompts from the json file
   const { allDataJson } = data
   const { nodes } = allDataJson
   const { prompts } = nodes[0]
 
-  console.log("prompts ===> ", prompts)
+  const initialOpenState = useMemo(
+    () =>
+      prompts.map((prompt, index) => {
+        const subArr = prompt.sub ? Array(prompt.sub.length).fill(false) : []
+        return [index === 0, subArr]
+      }),
+
+    [prompts]
+  )
 
   const [stripes, setStripes] = useState([])
+  const [isCollapseOpen, setIsCollapseOpen] = useState(initialOpenState)
   const [inputValue, setInputValue] = useState("")
   const [isFirstQuestion, setIsFirstQuestion] = useState(true)
   const [isLoading, setIsLoading] = useState(false)
@@ -29,26 +37,37 @@ const IndexPage = ({ data }) => {
   const formRef = useRef(null)
   const textareaRef = useRef(null)
 
+  const handleToggle = (promptIndex, subPromptIndex = null) => {
+    const updatedStates = [...isCollapseOpen]
+    const [isPromptOpen, subPromptStates] = updatedStates[promptIndex]
+    if (subPromptIndex === null) {
+      updatedStates[promptIndex] = [!isPromptOpen, subPromptStates]
+    } else {
+      subPromptStates[subPromptIndex] = !subPromptStates[subPromptIndex]
+      updatedStates[promptIndex] = [isPromptOpen, subPromptStates]
+    }
+    setIsCollapseOpen(updatedStates)
+  }
+
+  // reset the form
   const handleFormReset = () => formRef.current.reset()
 
+  // handle prompt select
   const handlePromptSelect = useCallback(question => {
-    const input = textareaRef.current
+    const textarea = textareaRef.current
     handleFormReset()
-    input.value = question
-    input.focus()
+    textarea.value = question
+    textarea.focus()
     setInputValue(question)
 
-    // Move cursor to the end of the textarea
-    const length = input.value.length
-    input.selectionStart = length
-    input.selectionEnd = length
-
-    console.log("handlePromptSelect ===> ")
+    // Move cursor to the end of the textarea content
+    const length = textarea.value.length
+    textarea.selectionStart = length
+    textarea.selectionEnd = length
   }, [])
 
   const handleInputChange = useCallback(() => {
     setInputValue(textareaRef.current.value)
-    console.log("handleInputChange ===> ")
   }, [])
 
   const handleUserInput = async () => {
@@ -102,15 +121,23 @@ const IndexPage = ({ data }) => {
     // to clear the textarea input
     handleFormReset()
 
+    // update stripes
     setStripes(newState)
+
+    // show loader
     setIsLoading(true)
 
+    // get the bot response & update stripes
     const parsedData = await handleUserInput()
-
     updateStripes(newState, botMessageId, parsedData)
+
+    // hide loader
     setIsLoading(false)
 
+    // not first question anymore
     setIsFirstQuestion(false)
+
+    // clear the input value
     setInputValue("")
   }
 
@@ -122,8 +149,8 @@ const IndexPage = ({ data }) => {
     }
   }
 
-  const showMobilePrompts = () => {
-    console.log("showMobilePrompts")
+  const handleMobilePrompts = () => {
+    console.log("handleMobilePrompts")
   }
 
   // scroll to the bottom when stripes change
@@ -136,8 +163,11 @@ const IndexPage = ({ data }) => {
     // if there is no last element, return
     if (!lastStripe) return
 
+    // get the height of the chat and the loader
     const chatHeight = currentChat.clientHeight
     const loaderHeight = currentLoader.clientHeight
+
+    // get the position of the last element to move the cursor here
     const loaderPosition = lastStripe.offsetTop + 20
 
     if (chatHeight - loaderHeight < loaderPosition) {
@@ -167,49 +197,32 @@ const IndexPage = ({ data }) => {
   return (
     <div id="app">
       {/* logo && chat GPT internal demo */}
-      <PromptsList prompts={prompts} handleSelect={handlePromptSelect} />
-      <div className="dialog">
-        <div className="welcome">
-          <h1 className="heading">HealthBot</h1>
-        </div>
-        <div className="conversation">
-          {isLoading ? <Loader ref={loaderRef} /> : null}
-          <div className="chat-container" ref={chatRef}>
-            {stripes.map((stripe, index) => {
-              const { isAi, value, botMessageId } = stripe
-              return (
-                <ChatStripe
-                  key={`index-${index}`}
-                  isAi={isAi}
-                  value={value}
-                  botMessageId={botMessageId}
-                />
-              )
-            })}
-          </div>
-          <div className="separator"></div>
-          <button className="btn-mobile" onClick={() => showMobilePrompts()}>
-            Open Prompt Library
-          </button>
-          <form ref={formRef}>
-            <Textarea
-              placeholder="Tab on prompt library of type here."
-              value={inputValue}
-              handleInputChange={handleInputChange}
-              handleKeyDown={handleKeyDown}
-              ref={textareaRef}
-            />
-            <Send
-              handleSubmit={e => handleSubmit(e)}
-              isFirstQuestion={isFirstQuestion}
-              inputValue={inputValue}
-            />
-          </form>
-          <p className="disclaimer">
-            Info for general purpose only. Consult professional for specifics.
-          </p>
-        </div>
-      </div>
+      {/* <PromptsMobile
+        prompts={prompts}
+        handleSelect={handlePromptSelect}
+        handleToggle={handleToggle}
+        isCollapseOpen={isCollapseOpen}
+      /> */}
+      <PromptsDesktop
+        prompts={prompts}
+        handleSelect={handlePromptSelect}
+        handleToggle={handleToggle}
+        isCollapseOpen={isCollapseOpen}
+      />
+      <Dialog
+        stripes={stripes}
+        inputValue={inputValue}
+        isLoading={isLoading}
+        isFirstQuestion={isFirstQuestion}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        handleMobilePrompts={handleMobilePrompts}
+        handleKeyDown={handleKeyDown}
+        loaderRef={loaderRef}
+        chatRef={chatRef}
+        formRef={formRef}
+        textareaRef={textareaRef}
+      />
     </div>
   )
 }

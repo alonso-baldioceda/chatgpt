@@ -35,58 +35,6 @@ h1 {
   position: relative;
 }
 
-.dialog {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  height: 100%;
-  padding: 0;
-  position: relative;
-  width: 100%;
-
-  @media (min-width: 992px) {
-    padding: 0 10px 0;
-  }
-}
-
-.conversation {
-  background-color: #fff;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  padding: 10px 10px 0;
-  position: relative;
-  width: 100%;
-
-  @media (min-width: 992px) {
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-}
-
-.welcome {
-  padding: 1rem;
-}
-
-.chat-container {
-  background-color: #fff;
-  height: 72vh;
-  margin-bottom: 10px;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  width: 100%;
-
-  @media (min-width: 992px) {
-    height: 78vh;
-  }
-}
-
-/* hides scrollbar */
-.chat-container::-webkit-scrollbar {
-  display: none;
-}
-
 .wrapper {
   padding: 15px;
   width: 100%;
@@ -140,30 +88,6 @@ h1 {
 /* hides scrollbar */
 .message::-webkit-scrollbar {
   display: none;
-}
-
-.btn-mobile {
-  background-color: #eee;
-  border-radius: 5px;
-  border: 1px solid #eee;
-  color: #000;
-  cursor: pointer;
-  display: block;
-  font-size: 16px;
-  font-weight: 500;
-  height: 42px;
-  padding: 10px 20px;
-  transition: all 0.1s ease-out;
-  width: 100%;
-
-  @media (min-width: 992px) {
-    display: none;
-  }
-}
-
-.btn-mobile:hover {
-  background-color: #d5d5d5;
-  border-color: #d5d5d5;
 }
 
 .separator {
