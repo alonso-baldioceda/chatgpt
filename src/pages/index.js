@@ -1,4 +1,5 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect, useCallback } from "react"
+import { graphql } from "gatsby"
 import "./../style.css"
 
 // Components
@@ -6,103 +7,34 @@ import PromptsList from "./../components/PromptsList"
 import Send from "../components/Send"
 import Textarea from "./../components/Textarea"
 import Loader from "./../components/Loader"
+import ChatStripe from "./../components/ChatStripe"
 
 // Utils
-import chatStripe from "../utils/chatStripe"
 import generateBotMessageId from "../utils/generateBotMessageId"
 
-const IndexPage = () => {
-  const data = {
-    prompts: [
-      {
-        heading: "Health",
-        sub: [
-          {
-            heading: "General health",
-            questions: [
-              {
-                heading: "Better Sleep Tips",
-                question: "What are some tips for getting better sleep?",
-              },
-              {
-                heading: "Core Strengthening Exercises",
-                question:
-                  "What are the best exercises for strengthening your core?",
-              },
-              {
-                heading: "Effective Stress Management",
-                question: "How can I manage my stress levels effectively?",
-              },
-              {
-                heading: "Healthy Vegan Foods",
-                question:
-                  "What are some healthy food options for people on a vegan diet?",
-              },
-            ],
-          },
-          {
-            heading: "Mental health",
-            questions: [
-              {
-                heading: "Managing mental illness effectively",
-                question:
-                  "What are some effective ways to manage anxiety or depression?",
-              },
-              {
-                heading: "Reducing mental health stigma",
-                question:
-                  "How can we reduce the stigma surrounding mental health issues and encourage more people to seek treatment?",
-              },
-              {
-                heading: "Preventing mental health crises",
-                question:
-                  "What are the most common warning signs of a mental health crisis, and how can loved ones help someone who may be struggling?",
-              },
-              {
-                heading: "Dispelling mental health misconceptions",
-                question:
-                  "What are some of the most common myths and misconceptions about mental health, and how can we educate people to dispel these beliefs?",
-              },
-            ],
-          },
-        ],
-      },
-      {
-        heading: "Medicine",
-        questions: [
-          {
-            heading: "Medication Side Effects",
-            question: "What are the side effects of a particular medication?",
-          },
-          {
-            heading: "Proper Medication Usage",
-            question:
-              "How should I take a particular medication? Should it be taken with food or without?",
-          },
-          {
-            heading: "Over-the-Counter Pain Relief",
-            question:
-              "What over-the-counter pain relievers are safe to take for a headache?",
-          },
-          {
-            heading: "Natural Cold Remedies",
-            question:
-              "Are there any herbal or natural remedies for a common cold?",
-          },
-        ],
-      },
-    ],
-  }
+const IndexPage = ({ data }) => {
+  const { allDataJson } = data
+  const { nodes } = allDataJson
+  const { prompts } = nodes[0]
 
-  const formRef = useRef(null)
+  console.log("prompts ===> ", prompts)
+
+  const [stripes, setStripes] = useState([])
   const [inputValue, setInputValue] = useState("")
+  const [isFirstQuestion, setIsFirstQuestion] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleReset = () => formRef.current.reset()
+  const loaderRef = useRef(null)
+  const chatRef = useRef(null)
+  const formRef = useRef(null)
+  const textareaRef = useRef(null)
 
-  const handlePromptSelect = question => {
-    const input = document.querySelector("#prompt")
-    handleReset()
-    input.innerHTML = question
+  const handleFormReset = () => formRef.current.reset()
+
+  const handlePromptSelect = useCallback(question => {
+    const input = textareaRef.current
+    handleFormReset()
+    input.value = question
     input.focus()
     setInputValue(question)
 
@@ -110,50 +42,16 @@ const IndexPage = () => {
     const length = input.value.length
     input.selectionStart = length
     input.selectionEnd = length
-  }
 
-  const chatContainer = document.querySelector("#chat-container")
+    console.log("handlePromptSelect ===> ")
+  }, [])
 
-  let loadInterval
+  const handleInputChange = useCallback(() => {
+    setInputValue(textareaRef.current.value)
+    console.log("handleInputChange ===> ")
+  }, [])
 
-  const typeText = (element, text) => {
-    let index = 0
-
-    let interval = setInterval(() => {
-      if (index < text.length) {
-        element.innerHTML += text.charAt(index)
-        index++
-      } else {
-        clearInterval(interval)
-      }
-    }, 20)
-  }
-
-  const handleSubmit = async e => {
-    e.preventDefault()
-
-    // user's chatstripe
-    chatContainer.innerHTML += chatStripe(false, inputValue)
-
-    // to clear the textarea input
-    handleReset()
-    document.querySelector("#prompt").innerHTML = ""
-
-    // bot's chatstripe
-    const botMessageId = generateBotMessageId()
-    chatContainer.innerHTML += chatStripe(true, " ", botMessageId)
-
-    // to focus scroll to the bottom
-    chatContainer.scrollTop = chatContainer.scrollHeight
-
-    // specific message div
-    const messageDiv = document.getElementById(botMessageId)
-
-    // loading spinner position
-    const rect = messageDiv.getBoundingClientRect()
-    const spinner = document.querySelector("#spinner")
-    spinner.style = `top: ${rect.top}px; display: block;`
-
+  const handleUserInput = async () => {
     try {
       const response = await fetch("http://localhost:5001/", {
         method: "POST",
@@ -166,27 +64,57 @@ const IndexPage = () => {
       })
 
       if (response.ok) {
-        clearInterval(loadInterval)
-        messageDiv.innerHTML = ""
-
         const data = await response.json()
-        const parsedData = data.bot.trim()
-
-        typeText(messageDiv, parsedData)
+        return data.bot.trim()
       } else {
         const errorMessage = await response.text()
         throw new Error(errorMessage)
       }
     } catch (error) {
       console.error(error)
-      messageDiv.innerHTML = "Sorry, something went wrong. Please try again."
-    } finally {
-      clearInterval(loadInterval)
-      spinner.style.display = "none"
-      console.log("finally")
+      return "Sorry, something went wrong. Please try again."
     }
   }
 
+  // Look for element in stripes with specific botMessageId
+  // and update the value field using findIndex
+  const updateStripes = (stripes, botMessageId, value) => {
+    const index = stripes.findIndex(
+      stripe => stripe.botMessageId === botMessageId
+    )
+    const updatedStripes = [...stripes]
+    updatedStripes[index].value = value
+    setStripes(updatedStripes)
+  }
+
+  // handle form submit
+  const handleSubmit = async e => {
+    e.preventDefault()
+
+    const botMessageId = generateBotMessageId()
+
+    const newState = [
+      ...stripes,
+      { isAi: false, value: inputValue },
+      { isAi: true, value: null, botMessageId: botMessageId },
+    ]
+
+    // to clear the textarea input
+    handleFormReset()
+
+    setStripes(newState)
+    setIsLoading(true)
+
+    const parsedData = await handleUserInput()
+
+    updateStripes(newState, botMessageId, parsedData)
+    setIsLoading(false)
+
+    setIsFirstQuestion(false)
+    setInputValue("")
+  }
+
+  // handle enter key press
   const handleKeyDown = e => {
     if (e.key === "Enter") {
       e.preventDefault()
@@ -194,27 +122,119 @@ const IndexPage = () => {
     }
   }
 
+  const showMobilePrompts = () => {
+    console.log("showMobilePrompts")
+  }
+
+  // scroll to the bottom when stripes change
+  const loaderPosition = () => {
+    const { current: currentChat } = chatRef
+    const { current: currentLoader } = loaderRef
+
+    // get the last element in the chat
+    const lastStripe = currentChat.lastElementChild
+    // if there is no last element, return
+    if (!lastStripe) return
+
+    const chatHeight = currentChat.clientHeight
+    const loaderHeight = currentLoader.clientHeight
+    const loaderPosition = lastStripe.offsetTop + 20
+
+    if (chatHeight - loaderHeight < loaderPosition) {
+      currentLoader.style.top = `${chatHeight - (loaderHeight + 8)}px`
+    } else {
+      currentLoader.style.top = `${loaderPosition - 4}px`
+    }
+  }
+
+  // scroll to the bottom when stripes change
+  useEffect(() => {
+    const elementChatRef = chatRef.current
+
+    if (elementChatRef) {
+      // to focus scroll to the bottom
+      elementChatRef.scrollTop = elementChatRef.scrollHeight
+    }
+  }, [stripes])
+
+  // set the position of the loader
+  useEffect(() => {
+    if (isLoading === true && loaderRef.current) {
+      loaderPosition()
+    }
+  }, [isLoading])
+
   return (
     <div id="app">
       {/* logo && chat GPT internal demo */}
-      <div className="prompts">
-        <PromptsList prompts={data.prompts} handleSelect={handlePromptSelect} />
-      </div>
+      <PromptsList prompts={prompts} handleSelect={handlePromptSelect} />
       <div className="dialog">
-        <div id="chat-container"></div>
-        <Loader />
-        <form ref={formRef}>
-          <Textarea
-            placeholder="Tab on prompt library of type here."
-            value={inputValue}
-            handleInputChange={setInputValue}
-            handleKeyDown={handleKeyDown}
-          />
-          <Send handleSubmit={e => handleSubmit(e)} />
-        </form>
+        <div className="welcome">
+          <h1 className="heading">HealthBot</h1>
+        </div>
+        <div className="conversation">
+          {isLoading ? <Loader ref={loaderRef} /> : null}
+          <div className="chat-container" ref={chatRef}>
+            {stripes.map((stripe, index) => {
+              const { isAi, value, botMessageId } = stripe
+              return (
+                <ChatStripe
+                  key={`index-${index}`}
+                  isAi={isAi}
+                  value={value}
+                  botMessageId={botMessageId}
+                />
+              )
+            })}
+          </div>
+          <div className="separator"></div>
+          <button className="btn-mobile" onClick={() => showMobilePrompts()}>
+            Open Prompt Library
+          </button>
+          <form ref={formRef}>
+            <Textarea
+              placeholder="Tab on prompt library of type here."
+              value={inputValue}
+              handleInputChange={handleInputChange}
+              handleKeyDown={handleKeyDown}
+              ref={textareaRef}
+            />
+            <Send
+              handleSubmit={e => handleSubmit(e)}
+              isFirstQuestion={isFirstQuestion}
+              inputValue={inputValue}
+            />
+          </form>
+          <p className="disclaimer">
+            Info for general purpose only. Consult professional for specifics.
+          </p>
+        </div>
       </div>
     </div>
   )
 }
 
 export default IndexPage
+
+export const query = graphql`
+  query MyQuery {
+    allDataJson {
+      nodes {
+        prompts {
+          heading
+          questions {
+            heading
+            question
+          }
+          sub {
+            heading
+            questions {
+              heading
+              question
+            }
+          }
+        }
+      }
+    }
+  }
+`

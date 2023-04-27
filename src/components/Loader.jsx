@@ -1,19 +1,23 @@
-import React from "react"
+import React, { forwardRef } from "react"
 import styled from "styled-components"
 
 const Spinner = styled.div`
-  display: none;
+  display: block;
   left: 74px;
   position: absolute;
   transform: translateZ(1px);
+  z-index: 1;
+  height: 36px;
+  width: 36px;
+  overflow: hidden;
 
   div {
     animation: spinner 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
     background: #76d376;
     border-radius: 50%;
-    display: inline-block;
     height: 36px;
     width: 36px;
+    overflow: hidden;
   }
 
   @keyframes spinner {
@@ -34,12 +38,10 @@ const Spinner = styled.div`
   }
 `
 
-const Loader = () => {
-  return (
-    <Spinner className="spinner" id="spinner">
-      <div></div>
-    </Spinner>
-  )
-}
+const Loader = forwardRef((_, ref) => (
+  <Spinner className="spinner" id="spinner" ref={ref}>
+    <div></div>
+  </Spinner>
+))
 
 export default Loader

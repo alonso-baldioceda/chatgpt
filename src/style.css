@@ -1,11 +1,30 @@
-@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@100;300;400;500;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap");
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Alegreya Sans", sans-serif;
-  font-size: 1rem;
+  font-family: "Inter", sans-serif;
+  font-size: 0.95rem;
+}
+
+body {
+  background-color: #f5f5f5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  text-align: center;
 }
 
 #app {
@@ -13,45 +32,64 @@
   flex-direction: row;
   height: 100vh;
   width: 100vw;
-}
-
-.prompts {
-  background-color: #fff;
-  width: 25%;
+  position: relative;
 }
 
 .dialog {
-  background-color: #f5f5f5;
   display: flex;
   flex-direction: column;
   flex: 1;
   height: 100%;
-  padding: 10px;
+  padding: 0;
   position: relative;
   width: 100%;
+
+  @media (min-width: 992px) {
+    padding: 0 10px 0;
+  }
 }
 
-#chat-container {
-  -ms-overflow-style: none;
+.conversation {
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  flex: 1;
-  height: 100%;
+  height: 100vh;
+  padding: 10px 10px 0;
+  position: relative;
+  width: 100%;
+
+  @media (min-width: 992px) {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+}
+
+.welcome {
+  padding: 1rem;
+}
+
+.chat-container {
+  background-color: #fff;
+  height: 72vh;
+  margin-bottom: 10px;
   overflow-y: scroll;
   scroll-behavior: smooth;
   scrollbar-width: none;
   width: 100%;
+
+  @media (min-width: 992px) {
+    height: 78vh;
+  }
 }
 
 /* hides scrollbar */
-#chat-container::-webkit-scrollbar {
+.chat-container::-webkit-scrollbar {
   display: none;
 }
 
 .wrapper {
-  width: 100%;
   padding: 15px;
+  width: 100%;
 }
 
 .ai {
@@ -63,9 +101,8 @@
   display: flex;
   flex-direction: row;
   gap: 10px;
-  position: relative;
   margin: 0 auto;
-  max-width: 1280px;
+  position: relative;
   width: 100%;
 }
 
@@ -92,20 +129,11 @@
 .message {
   color: #222;
   flex: 1;
-  font-size: 17px;
-  line-height: 23px;
   max-width: 100%;
   min-height: 40px;
   overflow-x: scroll;
   padding: 6px;
   scrollbar-width: none;
-
-  /*
-   * white space refers to any spaces, tabs, or newline characters that are used to format the CSS code
-   * specifies how white space within an element should be handled. It is similar to the "pre" value, which tells the browser to treat all white space as significant and to preserve it exactly as it appears in the source code.
-   * The pre-wrap value allows the browser to wrap long lines of text onto multiple lines if necessary.
-   * The default value for the white-space property in CSS is "normal". This tells the browser to collapse multiple white space characters into a single space, and to wrap text onto multiple lines as needed to fit within its container.
-  */
   white-space: pre-wrap;
 }
 
@@ -114,44 +142,51 @@
   display: none;
 }
 
+.btn-mobile {
+  background-color: #eee;
+  border-radius: 5px;
+  border: 1px solid #eee;
+  color: #000;
+  cursor: pointer;
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  height: 42px;
+  padding: 10px 20px;
+  transition: all 0.1s ease-out;
+  width: 100%;
+
+  @media (min-width: 992px) {
+    display: none;
+  }
+}
+
+.btn-mobile:hover {
+  background-color: #d5d5d5;
+  border-color: #d5d5d5;
+}
+
+.separator {
+  background-color: #eee;
+  height: 1px;
+  margin-bottom: 10px;
+  width: 100%;
+
+  @media (min-width: 992px) {
+    display: none;
+  }
+}
+
 form {
-  background: #fff;
-  margin: 0 auto;
-  max-width: 1280px;
-  padding: 10px;
+  background-color: #fff;
+  margin: 10px auto 10px;
   position: relative;
   width: 100%;
 }
 
-Loader .spinner {
-  display: inline-block;
-  left: 50px;
-  position: absolute;
-  transform: translateZ(1px);
-}
-
-.spinner > div {
-  display: inline-block;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #76d376;
-  animation: spinner 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
-}
-
-@keyframes spinner {
-  0%,
-  100% {
-    animation-timing-function: cubic-bezier(0.5, 0, 1, 0.5);
-  }
-  0% {
-    transform: rotateY(0deg);
-  }
-  50% {
-    transform: rotateY(1800deg);
-    animation-timing-function: cubic-bezier(0, 0.5, 0.5, 1);
-  }
-  100% {
-    transform: rotateY(3600deg);
-  }
+.disclaimer {
+  color: #999;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+  margin-left: 18px;
 }

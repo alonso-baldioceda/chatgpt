@@ -3,35 +3,57 @@ import styled from "styled-components"
 import Submit from "./../images/submit.svg"
 
 const Button = styled.button`
-  background: transparent;
-  border: 0;
+  background-color: #f5f5f5;
   border-radius: 6px;
-  bottom: 26px;
-  color: #1276d3;
-  height: 40px;
+  border: 0;
+  bottom: 14px;
+  color: #bbb;
+  height: 38px;
   padding: 10px;
   position: absolute;
-  right: 26px;
+  right: 16px;
   text-align: left;
-  transition: background 0.15s ease;
-  width: 40px;
-
-  &:hover {
-    background: #f5f5f5;
-    text-decoration: underline;
-  }
+  transition: all 0.15s ease;
 
   svg {
+    fill: #fff;
     height: 20px;
     width: 20px;
-    opacity: 0.2;
+  }
+
+  &.first,
+  &.not-first {
+    background-color: #1276d3 !important;
+    color: #fff !important;
+
+    &:not([disabled]):hover {
+      background-color: #0f6ac0;
+    }
+  }
+
+  &:disabled {
+    background-color: #f5f5f5 !important;
+    color: #bbb !important;
+    cursor: not-allowed !important;
+  }
+
+  &:not(.first):hover {
+    background-color: #1276d3;
+    color: #fff !important;
   }
 `
 
-const Send = ({ handleSubmit }) => {
+const Send = ({ handleSubmit, isFirstQuestion, inputValue }) => {
+  const isInputValueEmpty = inputValue === ""
+
   return (
-    <Button type="submit" onClick={handleSubmit}>
-      <Submit />
+    <Button
+      type="submit"
+      onClick={handleSubmit}
+      className={isFirstQuestion ? "first" : "not-first"}
+      disabled={isInputValueEmpty}
+    >
+      {isFirstQuestion ? <span>Give It a Try</span> : <Submit />}
     </Button>
   )
 }

@@ -7,9 +7,10 @@ const Caret = styled(Arrow)`
   margin-left: 6px;
   transform: rotate(90deg);
   width: 16px;
+  transition: all 0.1s ease-in;
 
   &.expanded {
-    transform: rotate(270deg);
+    transform: scaleX(-1) rotate(270deg);
   }
 `
 const Title = styled.div`
