@@ -20,9 +20,10 @@ const Title = styled.div`
   margin-bottom: 20px;
 `
 
-const Heading = styled.h3`
+const Heading = styled.p`
   cursor: pointer;
   font-size: 1.1rem;
+  font-weight: 500;
 `
 
 const CollapseTitle = ({ handleToggle, text, index, subIndex, isActive }) => (

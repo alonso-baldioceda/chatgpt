@@ -4,7 +4,7 @@ import "./../style.css"
 
 // Components
 import PromptsDesktop from "../components/PromptsDesktop"
-import PromptsMobile from "../components/PromptsMobile"
+// import PromptsMobile from "../components/PromptsMobile"
 import Dialog from "../components/Dialog"
 
 // Utils
@@ -122,20 +122,28 @@ const IndexPage = ({ data }) => {
     handleFormReset()
 
     // update stripes
-    setStripes(newState)
+    // setStripes(newState)
 
     // show loader
-    setIsLoading(true)
+    // setIsLoading(true)
 
     // get the bot response & update stripes
-    const parsedData = await handleUserInput()
-    updateStripes(newState, botMessageId, parsedData)
+    // const parsedData = await handleUserInput()
+    // updateStripes(newState, botMessageId, "parsedData")
 
     // hide loader
-    setIsLoading(false)
+    // setIsLoading(false)
 
     // not first question anymore
-    setIsFirstQuestion(false)
+    // setIsFirstQuestion(false)
+
+    setTimeout(() => {
+      setIsLoading(true)
+      setStripes(newState)
+      updateStripes(newState, botMessageId, "parsedData")
+      setIsLoading(false)
+      setIsFirstQuestion(false)
+    }, 250)
 
     // clear the input value
     setInputValue("")

@@ -8,7 +8,7 @@ import Collapse from "./Collapse"
 const PromptsDesktopStyled = styled.div`
   background-color: #fff;
   display: none;
-  padding: 10px 10px 20px;
+  padding: 2rem 1rem;
   max-height: 100vh;
   overflow-y: scroll;
   width: 25%;

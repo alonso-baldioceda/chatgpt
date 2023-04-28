@@ -1,11 +1,11 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap");
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   font-family: "Inter", sans-serif;
-  font-size: 0.95rem;
+  font-size: 0.925rem;
 }
 
 body {
@@ -18,13 +18,15 @@ h3,
 h4,
 h5,
 h6 {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 h1 {
-  font-size: 22px;
-  font-weight: 700;
-  text-align: center;
+  font-size: 24px;
+}
+
+h2 {
+  font-size: 20px;
 }
 
 #app {
@@ -33,84 +35,4 @@ h1 {
   height: 100vh;
   width: 100vw;
   position: relative;
-}
-
-.wrapper {
-  padding: 15px;
-  width: 100%;
-}
-
-.ai {
-  background: #ebebeb;
-}
-
-.chat {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin: 0 auto;
-  position: relative;
-  width: 100%;
-}
-
-.profile {
-  align-items: center;
-  background: #222;
-  border-radius: 5px;
-  display: flex;
-  height: 36px;
-  justify-content: center;
-  width: 36px;
-}
-
-.ai .profile {
-  background: #fff;
-}
-
-.profile svg {
-  height: 60%;
-  object-fit: contain;
-  width: 60%;
-}
-
-.message {
-  color: #222;
-  flex: 1;
-  max-width: 100%;
-  min-height: 40px;
-  overflow-x: scroll;
-  padding: 6px;
-  scrollbar-width: none;
-  white-space: pre-wrap;
-}
-
-/* hides scrollbar */
-.message::-webkit-scrollbar {
-  display: none;
-}
-
-.separator {
-  background-color: #eee;
-  height: 1px;
-  margin-bottom: 10px;
-  width: 100%;
-
-  @media (min-width: 992px) {
-    display: none;
-  }
-}
-
-form {
-  background-color: #fff;
-  margin: 10px auto 10px;
-  position: relative;
-  width: 100%;
-}
-
-.disclaimer {
-  color: #999;
-  font-size: 0.85rem;
-  margin-bottom: 8px;
-  margin-left: 18px;
 }
