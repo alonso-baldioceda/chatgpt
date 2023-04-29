@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import Arrow from "./../images/arrow.svg"
+import { AppContext } from "./AppContext"
 
 // Styles
 const ListItem = styled.li`
@@ -36,7 +37,9 @@ const Button = styled.button`
   }
 `
 
-const CollapseList = ({ handleSelect, question, heading }) => {
+const CollapseList = ({ question, heading }) => {
+  const { handleSelect } = useContext(AppContext)
+
   return (
     <ListItem>
       <Button onClick={() => handleSelect(question)}>

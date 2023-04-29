@@ -25,25 +25,13 @@ const PromptsDesktopStyled = styled.div`
 `
 
 const PromptsDesktop = () => {
-  const { prompts, isCollapseOpen, handleSelect, handleToggle } =
-    useContext(AppContext)
+  const { prompts } = useContext(AppContext)
 
   return (
     <PromptsDesktopStyled>
-      {prompts.map((prompt, index) => {
-        const isOpenPrompt = isCollapseOpen[index][0]
-        const isOpenSubPrompts = isCollapseOpen[index][1]
-        return (
-          <Collapse
-            key={`prompts-wrapper-${index}`}
-            prompt={{ ...prompt, index }}
-            handleSelect={handleSelect}
-            handleToggle={handleToggle}
-            isOpenPrompt={isOpenPrompt}
-            isOpenSubPrompts={isOpenSubPrompts}
-          />
-        )
-      })}
+      {prompts.map((prompt, index) => (
+        <Collapse key={`collapse-${index}`} prompt={{ ...prompt, index }} />
+      ))}
     </PromptsDesktopStyled>
   )
 }

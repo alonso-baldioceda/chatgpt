@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react"
+import React from "react"
 import styled from "styled-components"
 
 // Styles
@@ -19,14 +19,12 @@ const Image = styled.img`
   width: 96px;
 `
 
-const Welcome = forwardRef((_, ref) => {
-  return (
-    <WelcomeStyle ref={ref}>
-      <Heading>Come on Ask...</Heading>
-      <SubHeading>ChatGPT collaborative</SubHeading>
-      <Image src="hearth.png" alt="heath" />
-    </WelcomeStyle>
-  )
-})
+const Welcome = () => (
+  <WelcomeStyle>
+    <Heading>Come on Ask...</Heading>
+    <SubHeading>ChatGPT collaborative</SubHeading>
+    <Image src="hearth.png" alt="heath" />
+  </WelcomeStyle>
+)
 
 export default Welcome

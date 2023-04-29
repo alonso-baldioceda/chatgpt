@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import Arrow from "./../images/arrow.svg"
+import { AppContext } from "./AppContext"
 
 const Caret = styled(Arrow)`
   height: 16px;
@@ -26,11 +27,14 @@ const Heading = styled.p`
   font-weight: 500;
 `
 
-const CollapseTitle = ({ handleToggle, text, index, subIndex, isActive }) => (
-  <Title onClick={() => handleToggle(index, subIndex)}>
-    <Heading>{text}</Heading>
-    <Caret className={isActive ? "expanded" : ""} />
-  </Title>
-)
+const CollapseTitle = ({ text, index, subIndex, isActive }) => {
+  const { handleToggle } = useContext(AppContext)
+  return (
+    <Title onClick={() => handleToggle(index, subIndex)}>
+      <Heading>{text}</Heading>
+      <Caret className={isActive ? "expanded" : ""} />
+    </Title>
+  )
+}
 
 export default CollapseTitle

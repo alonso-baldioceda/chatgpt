@@ -84,9 +84,9 @@ const Dialog = forwardRef(() => {
   const loaderRef = useRef(null)
   const chatRef = useRef(null)
 
-  const handleInputChange = useCallback(() => {
-    setInputValue(textareaRef.current.value)
-  }, [])
+  // const handleInputChange = useCallback(() => {
+  //   setInputValue(textareaRef.current.value)
+  // }, [])
 
   // reset the form
   const handleFormReset = () => formRef.current.reset()
@@ -215,11 +215,7 @@ const Dialog = forwardRef(() => {
             })}
           </div>
         )}
-        <PromptsForm
-          handleInputChange={handleInputChange}
-          handleKeyDown={handleKeyDown}
-          handleSubmit={e => handleSubmit(e)}
-        />
+        <PromptsForm handleSubmit={e => handleSubmit(e)} />
       </PromptsBody>
     </DialogStyle>
   )

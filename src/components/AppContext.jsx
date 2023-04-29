@@ -64,7 +64,7 @@ export const AppContextProvider = ({ children }) => {
     textarea.focus()
     setInputValue(question)
 
-    // Move cursor to the end of the textarea content
+    // move cursor to the end of the textarea content
     const length = textarea.value.length
     textarea.selectionStart = length
     textarea.selectionEnd = length
@@ -81,6 +81,10 @@ export const AppContextProvider = ({ children }) => {
       updatedStates[promptIndex] = [isPromptOpen, subPromptStates]
     }
     setIsCollapseOpen(updatedStates)
+  }
+
+  const handleInputChange = () => {
+    setInputValue(textareaRef.current.value)
   }
 
   const contextValue = {
@@ -104,6 +108,7 @@ export const AppContextProvider = ({ children }) => {
     handleFormReset,
     handleSelect,
     handleToggle,
+    handleInputChange,
   }
 
   return (

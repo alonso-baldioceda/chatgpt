@@ -1,5 +1,6 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
+import { AppContext } from "./AppContext"
 
 // Components
 import CollapseTitle from "./CollapseTitle"
@@ -12,60 +13,53 @@ const List = styled.ul`
   padding: 0;
 `
 
-const Collapse = ({
-  prompt: { heading, index, questions, sub },
-  handleSelect,
-  handleToggle,
-  isOpenPrompt,
-  isOpenSubPrompts,
-}) => (
-  <div className="collapsable-main">
-    <CollapseTitle
-      handleToggle={handleToggle}
-      text={heading}
-      index={index}
-      isActive={isOpenPrompt}
-    />
-    {isOpenPrompt === true && (
-      <>
-        {sub?.map((sub, indexList) => {
-          const { heading, questions } = sub
+const Collapse = ({ prompt: { heading, index, questions, sub } }) => {
+  const { isCollapseOpen } = useContext(AppContext)
 
-          return (
-            <div className="collapsable-secondary" key={`title-${indexList}`}>
-              <CollapseTitle
-                handleToggle={handleToggle}
-                text={heading}
-                index={index}
-                subIndex={indexList}
-                isActive={isOpenSubPrompts[indexList]}
+  const isOpenPrompt = isCollapseOpen[index][0]
+  const isOpenSubPrompts = isCollapseOpen[index][1]
+
+  return (
+    <div className="collapsable-main">
+      <CollapseTitle text={heading} index={index} isActive={isOpenPrompt} />
+      {isOpenPrompt === true && (
+        <>
+          {sub?.map((sub, indexList) => {
+            const { heading, questions } = sub
+
+            return (
+              <div className="collapsable-secondary" key={`title-${indexList}`}>
+                <CollapseTitle
+                  text={heading}
+                  index={index}
+                  subIndex={indexList}
+                  isActive={isOpenSubPrompts[indexList]}
+                />
+                {isOpenSubPrompts[indexList] === true && (
+                  <List key={`prompt-list-${indexList}`}>
+                    {questions?.map((question, indexQuestion) => (
+                      <CollapseList
+                        key={`prompt-list-sub-${indexQuestion}`}
+                        {...question}
+                      />
+                    ))}
+                  </List>
+                )}
+              </div>
+            )
+          })}
+          <List>
+            {questions?.map((question, indexQuestion) => (
+              <CollapseList
+                key={`question-list-${indexQuestion}`}
+                {...question}
               />
-              {isOpenSubPrompts[indexList] === true && (
-                <List key={`prompt-list-${indexList}`}>
-                  {questions?.map((question, indexQuestion) => (
-                    <CollapseList
-                      key={`question-list-${indexQuestion}`}
-                      {...question}
-                      handleSelect={handleSelect}
-                    />
-                  ))}
-                </List>
-              )}
-            </div>
-          )
-        })}
-        <List>
-          {questions?.map((question, indexQuestion) => (
-            <CollapseList
-              key={`question-list-${indexQuestion}`}
-              {...question}
-              handleSelect={handleSelect}
-            />
-          ))}
-        </List>
-      </>
-    )}
-  </div>
-)
+            ))}
+          </List>
+        </>
+      )}
+    </div>
+  )
+}
 
 export default Collapse

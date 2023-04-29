@@ -54,9 +54,15 @@ const Disclaimer = styled.p`
   margin-left: 18px;
 `
 
-const PromptsForm = ({ handleInputChange, handleKeyDown, handleSubmit }) => {
-  const { inputValue, isFirstQuestion, formRef, textareaRef } =
-    useContext(AppContext)
+const PromptsForm = ({ handleSubmit }) => {
+  const {
+    inputValue,
+    isFirstQuestion,
+    formRef,
+    textareaRef,
+    handleInputChange,
+    handleKeyDown,
+  } = useContext(AppContext)
 
   return (
     <div>
