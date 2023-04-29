@@ -1,5 +1,12 @@
-import React from "react"
+import React, {
+  useContext,
+  useCallback,
+  useMemo,
+  useEffect,
+  useState,
+} from "react"
 import styled from "styled-components"
+import { AppContext } from "./AppContext"
 
 // Components
 import Collapse from "./Collapse"
@@ -23,18 +30,55 @@ const PromptsDesktopStyled = styled.div`
   }
 `
 
-const PromptsDesktop = ({
-  prompts,
-  handleSelect,
-  handleToggle,
-  isCollapseOpen,
-}) => {
+const PromptsDesktop = ({ prompts }) => {
+  const { setInputValue } = useContext(AppContext)
+
+  const initialOpenState = useMemo(
+    () =>
+      prompts.map((prompt, index) => {
+        const subArr = prompt.sub ? Array(prompt.sub.length).fill(false) : []
+        return [index === 0, subArr]
+      }),
+
+    [prompts]
+  )
+
+  const [isCollapseOpen, setIsCollapseOpen] = useState(initialOpenState)
+
+  const handleToggle = (promptIndex, subPromptIndex = null) => {
+    console.log("handleToggle")
+    const updatedStates = [...isCollapseOpen]
+    const [isPromptOpen, subPromptStates] = updatedStates[promptIndex]
+    if (subPromptIndex === null) {
+      updatedStates[promptIndex] = [!isPromptOpen, subPromptStates]
+    } else {
+      subPromptStates[subPromptIndex] = !subPromptStates[subPromptIndex]
+      updatedStates[promptIndex] = [isPromptOpen, subPromptStates]
+    }
+    setIsCollapseOpen(updatedStates)
+  }
+
+  // handle prompt select
+  const handleSelect = question => {
+    console.log("handleSelect", question)
+    // const textarea = textareaRef.current
+    // // handleFormReset()
+    // textarea.value = question
+    // textarea.focus()
+    setInputValue(question)
+
+    // // Move cursor to the end of the textarea content
+    // const length = textarea.value.length
+    // textarea.selectionStart = length
+    // textarea.selectionEnd = length
+  }
+
   return (
     <PromptsDesktopStyled>
       {prompts.map((prompt, index) => {
+        console.log("prompt", prompt)
         const isOpenPrompt = isCollapseOpen[index][0]
         const isOpenSubPrompts = isCollapseOpen[index][1]
-
         return (
           <Collapse
             key={`prompts-wrapper-${index}`}

@@ -1,12 +1,22 @@
-import React, { useState, useEffect, forwardRef, useRef } from "react"
+import React, {
+  forwardRef,
+  useRef,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react"
 import styled from "styled-components"
+import { AppContext } from "./AppContext"
 
 // Components
-import Send from "../components/Send"
-import Textarea from "./../components/Textarea"
-import Loader from "./../components/Loader"
-import ChatStripe from "./../components/ChatStripe"
+import Send from "./Send"
+import Textarea from "./Textarea"
+import Loader from "./Loader"
+import ChatStripe from "./ChatStripe"
 import Welcome from "./Welcome"
+
+// Utils
+import generateBotMessageId from "./../utils/generateBotMessageId"
 
 // Styles
 const DialogStyle = styled.div`
@@ -28,7 +38,6 @@ const PromptsBody = styled.div`
   background-color: #fff;
   display: flex;
   flex-direction: column;
-
   height: 100%;
   padding: 10px 10px 0;
   position: relative;
@@ -41,22 +50,18 @@ const PromptsBody = styled.div`
 
   .prompts-history {
     background-color: #fff;
-    height: 100%;
+    max-height: 72vh;
     margin-bottom: 10px;
     overflow-y: scroll;
     scroll-behavior: smooth;
     scrollbar-width: none;
     width: 100%;
 
-    /* @media (min-width: 992px) {
-      height: 78vh;
-    } */
+    @media (min-width: 992px) {
+      max-height: 78vh;
+    }
   }
 `
-
-const PromptsHistory = styled(
-  forwardRef((props, ref) => <div {...props} ref={props.chatRef} />)
-)``
 
 const Title = styled.h1`
   padding: 1.2rem 1rem;
@@ -110,55 +115,143 @@ const Disclaimer = styled.p`
   margin-left: 18px;
 `
 
-const Dialog = forwardRef(
-  (
-    {
-      stripes,
-      inputValue,
-      isLoading,
-      isFirstQuestion,
-      handleMobilePrompts,
-      handleInputChange,
-      handleKeyDown,
-      handleSubmit,
-      loaderRef,
-      chatRef,
-      formRef,
-      textareaRef,
-    },
-    ref
-  ) => {
-    const [isWelcomeVisible, setIsWelcomeVisible] = useState(true)
+const Dialog = forwardRef(() => {
+  const {
+    isLoading,
+    setIsLoading,
+    stripes,
+    setStripes,
+    inputValue,
+    setInputValue,
+    isFirstQuestion,
+    setIsFirstQuestion,
+  } = useContext(AppContext)
 
-    const welcomeRef = useRef(null)
+  const loaderRef = useRef(null)
+  const chatRef = useRef(null)
+  const formRef = useRef(null)
+  const textareaRef = useRef(null)
 
-    if (welcomeRef && welcomeRef.current) {
-      console.log("welcomeRef", welcomeRef.current.clientHeight)
-    }
+  console.log("isLoading", isLoading)
 
-    // const welcomeHeight = welcomeRef.current.clientHeight
+  const handleInputChange = useCallback(() => {
+    setInputValue(textareaRef.current.value)
+  }, [])
 
-    // console.log("welcomeRef", welcomeRef.current.clientHeight)
+  // reset the form
+  const handleFormReset = () => formRef.current.reset()
 
-    useEffect(() => {
-      if (isFirstQuestion === false) {
-        setIsWelcomeVisible(false)
+  const handleUserInput = async () => {
+    try {
+      const response = await fetch("http://localhost:5001/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: inputValue,
+        }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        return data.bot.trim()
+      } else {
+        const errorMessage = await response.text()
+        throw new Error(errorMessage)
       }
-    }, [isFirstQuestion])
+    } catch (error) {
+      console.error(error)
+      return "Sorry, something went wrong. Please try again."
+    }
+  }
 
-    useEffect(() => {}, [isWelcomeVisible])
+  // Look for element in stripes with id and update its value
+  const updateStripes = (stripes, botMessageId, value) => {
+    const index = stripes.findIndex(
+      stripe => stripe.botMessageId === botMessageId
+    )
+    const updatedStripes = [...stripes]
+    updatedStripes[index].value = value
+    setStripes(updatedStripes)
+  }
 
-    return (
-      <DialogStyle>
-        <Title>HealthBot</Title>
-        <PromptsBody>
-          {isWelcomeVisible ? <Welcome ref={welcomeRef} /> : null}
-          {isLoading ? <Loader ref={loaderRef} /> : null}
-          <PromptsHistory
-            ref={chatRef}
-            className="prompts-history"
-            style={{ maxHeight: "calc(100vh  )" }}
-          >
+  // handle form submit
+  const handleSubmit = async e => {
+    e.preventDefault()
+
+    const botMessageId = generateBotMessageId()
+
+    const newState = [
+      ...stripes,
+      { isAi: false, value: inputValue },
+      { isAi: true, value: null, botMessageId: botMessageId },
+    ]
+
+    // to clear the textarea input
+    handleFormReset()
+
+    // // update stripes
+    // setStripes(newState)
+
+    // // show loader
+    // setIsLoading(true)
+
+    // // get the bot response & update stripes
+    // const parsedData = await handleUserInput()
+    // updateStripes(newState, botMessageId, parsedData)
+
+    // // hide loader
+    // setIsLoading(false)
+
+    // // not first question anymore
+    // setIsFirstQuestion(false)
+
+    // // clear the input value
+    // setInputValue("")
+
+    setTimeout(() => {
+      setIsLoading(true)
+      setStripes(newState)
+      updateStripes(newState, botMessageId, "parsedData")
+      setIsLoading(false)
+      setIsFirstQuestion(false)
+      setInputValue("")
+    }, 250)
+  }
+
+  // handle enter key press
+  const handleKeyDown = e => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleSubmit(e)
+    }
+  }
+
+  // scroll to the bottom when stripes change
+  useEffect(() => {
+    const elementChatRef = chatRef.current
+
+    if (elementChatRef) {
+      // to focus scroll to the bottom
+      elementChatRef.scrollTop = elementChatRef.scrollHeight
+
+      // move the loader to the bottom of prompts-history when stripes change
+      if (loaderRef.current) {
+        const elementLoaderRef = loaderRef.current
+        elementLoaderRef.style.top = `${elementChatRef.scrollHeight}px`
+      }
+    }
+  }, [stripes])
+
+  return (
+    <DialogStyle>
+      <Title>HealthBot</Title>
+      <PromptsBody>
+        {isFirstQuestion && <Welcome />}
+        {isLoading && <Loader ref={loaderRef} />}
+        {!isFirstQuestion && (
+          <div ref={chatRef} className="prompts-history">
             {stripes.map((stripe, index) => {
               const { isAi, value, botMessageId } = stripe
               return (
@@ -170,34 +263,33 @@ const Dialog = forwardRef(
                 />
               )
             })}
-          </PromptsHistory>
-          <div>
-            <Separator />
-            <MobileButton onClick={() => handleMobilePrompts()}>
-              Open Prompt Library
-            </MobileButton>
-            <Form ref={formRef}>
-              <Textarea
-                placeholder="Tab on prompt library of type here."
-                value={inputValue}
-                handleInputChange={handleInputChange}
-                handleKeyDown={handleKeyDown}
-                ref={textareaRef}
-              />
-              <Send
-                handleSubmit={e => handleSubmit(e)}
-                isFirstQuestion={isFirstQuestion}
-                inputValue={inputValue}
-              />
-            </Form>
-            <Disclaimer>
-              Info for general purpose only. Consult professional for specifics.
-            </Disclaimer>
           </div>
-        </PromptsBody>
-      </DialogStyle>
-    )
-  }
-)
+        )}
+        <div>
+          <Separator />
+          {/* <MobileButton onClick={() => handleMobilePrompts()}> */}
+          <MobileButton>Open Prompt Library</MobileButton>
+          <Form ref={formRef}>
+            <Textarea
+              placeholder="Tab on prompt library of type here."
+              value={inputValue}
+              handleInputChange={handleInputChange}
+              handleKeyDown={handleKeyDown}
+              ref={textareaRef}
+            />
+            <Send
+              handleSubmit={e => handleSubmit(e)}
+              isFirstQuestion={isFirstQuestion}
+              inputValue={inputValue}
+            />
+          </Form>
+          <Disclaimer>
+            Info for general purpose only. Consult professional for specifics.
+          </Disclaimer>
+        </div>
+      </PromptsBody>
+    </DialogStyle>
+  )
+})
 
 export default Dialog
