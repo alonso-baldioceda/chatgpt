@@ -54,34 +54,21 @@ const Disclaimer = styled.p`
   margin-left: 18px;
 `
 
-const PromptsForm = ({ handleSubmit }) => {
-  const {
-    inputValue,
-    isFirstQuestion,
-    formRef,
-    textareaRef,
-    handleInputChange,
-    handleKeyDown,
-  } = useContext(AppContext)
+const PromptsForm = () => {
+  const { formRef, textareaRef, handleOpenMobileMenu } = useContext(AppContext)
 
   return (
     <div>
       <Separator />
-      {/* <MobileButton onClick={() => handleMobilePrompts()}> */}
-      <MobileButton>Open Prompt Library</MobileButton>
+      <MobileButton onClick={handleOpenMobileMenu}>
+        Open Prompt Library
+      </MobileButton>
       <Form ref={formRef}>
         <Textarea
           placeholder="Tab on prompt library of type here."
-          value={inputValue}
-          handleInputChange={handleInputChange}
-          handleKeyDown={handleKeyDown}
           ref={textareaRef}
         />
-        <Send
-          handleSubmit={e => handleSubmit(e)}
-          isFirstQuestion={isFirstQuestion}
-          inputValue={inputValue}
-        />
+        <Send />
       </Form>
       <Disclaimer>
         Info for general purpose only. Consult professional for specifics.

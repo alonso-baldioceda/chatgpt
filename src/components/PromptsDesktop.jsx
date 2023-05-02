@@ -1,8 +1,8 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import { AppContext } from "./AppContext"
 
 // Components
+import { AppContext } from "./AppContext"
 import Collapse from "./Collapse"
 
 // Styles

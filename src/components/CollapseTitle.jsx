@@ -29,6 +29,7 @@ const Heading = styled.p`
 
 const CollapseTitle = ({ text, index, subIndex, isActive }) => {
   const { handleToggle } = useContext(AppContext)
+
   return (
     <Title onClick={() => handleToggle(index, subIndex)}>
       <Heading>{text}</Heading>

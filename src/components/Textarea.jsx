@@ -1,5 +1,6 @@
-import React, { forwardRef } from "react"
+import React, { forwardRef, useContext } from "react"
 import styled from "styled-components"
+import { AppContext } from "./AppContext"
 
 const Input = styled.textarea`
   background: transparent;
@@ -10,12 +11,15 @@ const Input = styled.textarea`
   width: 100%;
 `
 
-const Textarea = forwardRef(
-  ({ placeholder, inputValue, handleInputChange, handleKeyDown }, ref) => (
+const Textarea = forwardRef(({ placeholder }, ref) => {
+  const { inputValue, handleInputChange, handleKeyDown } =
+    useContext(AppContext)
+
+  return (
     <Input
       name="prompt"
       id="prompt"
-      rows="1"
+      // rows="1"
       cols="1"
       placeholder={placeholder}
       value={inputValue}
@@ -24,6 +28,6 @@ const Textarea = forwardRef(
       ref={ref}
     />
   )
-)
+})
 
 export default Textarea

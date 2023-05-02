@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useContext } from "react"
 import styled from "styled-components"
 import Submit from "./../images/submit.svg"
+import { AppContext } from "./AppContext"
 
 const Button = styled.button`
   background-color: #f5f5f5;
@@ -43,7 +44,8 @@ const Button = styled.button`
   }
 `
 
-const Send = ({ handleSubmit, isFirstQuestion, inputValue }) => {
+const Send = () => {
+  const { inputValue, isFirstQuestion, handleSubmit } = useContext(AppContext)
   const isInputValueEmpty = inputValue === ""
 
   return (

@@ -1,6 +1,8 @@
 import React, { useContext } from "react"
 import styled from "styled-components"
-import Arrow from "./../images/arrow.svg"
+import ArrowIcon from "./../images/arrow.svg"
+
+// Components
 import { AppContext } from "./AppContext"
 
 // Styles
@@ -37,17 +39,17 @@ const Button = styled.button`
   }
 `
 
-const CollapseList = ({ question, heading }) => {
+const CollapseItem = ({ question, heading }) => {
   const { handleSelect } = useContext(AppContext)
 
   return (
     <ListItem>
       <Button onClick={() => handleSelect(question)}>
         {heading}
-        <Arrow />
+        <ArrowIcon />
       </Button>
     </ListItem>
   )
 }
 
-export default CollapseList
+export default CollapseItem

@@ -4,7 +4,7 @@ import { AppContext } from "./AppContext"
 
 // Components
 import CollapseTitle from "./CollapseTitle"
-import CollapseList from "./CollapseList"
+import CollapseItem from "./CollapseItem"
 
 // Styles
 const List = styled.ul`
@@ -38,8 +38,8 @@ const Collapse = ({ prompt: { heading, index, questions, sub } }) => {
                 {isOpenSubPrompts[indexList] === true && (
                   <List key={`prompt-list-${indexList}`}>
                     {questions?.map((question, indexQuestion) => (
-                      <CollapseList
-                        key={`prompt-list-sub-${indexQuestion}`}
+                      <CollapseItem
+                        key={`prompt-list-${indexQuestion}`}
                         {...question}
                       />
                     ))}
@@ -50,7 +50,7 @@ const Collapse = ({ prompt: { heading, index, questions, sub } }) => {
           })}
           <List>
             {questions?.map((question, indexQuestion) => (
-              <CollapseList
+              <CollapseItem
                 key={`question-list-${indexQuestion}`}
                 {...question}
               />
