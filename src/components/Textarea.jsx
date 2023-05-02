@@ -1,4 +1,4 @@
-import React, { forwardRef, useContext } from "react"
+import React, { useState, forwardRef, useContext } from "react"
 import styled from "styled-components"
 import { AppContext } from "./AppContext"
 
@@ -6,8 +6,9 @@ const Input = styled.textarea`
   background: transparent;
   border-radius: 5px;
   border: 1px solid #999;
+  max-height: 200px;
   outline: none;
-  padding: 20px 70px 20px 14px;
+  padding: 14px 70px 14px 14px;
   width: 100%;
 `
 
@@ -15,15 +16,19 @@ const Textarea = forwardRef(({ placeholder }, ref) => {
   const { inputValue, handleInputChange, handleKeyDown } =
     useContext(AppContext)
 
+  const [height, setHeight] = useState("auto")
+
   return (
     <Input
       name="prompt"
       id="prompt"
-      // rows="1"
-      cols="1"
       placeholder={placeholder}
       value={inputValue}
-      onChange={e => handleInputChange(e)}
+      style={{ minHeight: height }}
+      onChange={e => {
+        handleInputChange(e)
+        setHeight(e.target.scrollHeight + "px")
+      }}
       onKeyDown={e => handleKeyDown(e)}
       ref={ref}
     />

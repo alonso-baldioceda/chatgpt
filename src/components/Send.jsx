@@ -1,4 +1,4 @@
-import React, { useContext } from "react"
+import React, { useState, useContext, useEffect } from "react"
 import styled from "styled-components"
 import Submit from "./../images/submit.svg"
 import { AppContext } from "./AppContext"
@@ -7,7 +7,7 @@ const Button = styled.button`
   background-color: #f5f5f5;
   border-radius: 6px;
   border: 0;
-  bottom: 14px;
+  bottom: 16px;
   color: #bbb;
   height: 38px;
   padding: 10px;
@@ -48,6 +48,20 @@ const Send = () => {
   const { inputValue, isFirstQuestion, handleSubmit } = useContext(AppContext)
   const isInputValueEmpty = inputValue === ""
 
+  const [windowSize, setWindowSize] = useState(window.innerWidth)
+
+  useEffect(() => {
+    function handleResize() {
+      setWindowSize(window.innerWidth)
+    }
+
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      window.removeEventListener("resize", handleResize)
+    }
+  }, [])
+
   return (
     <Button
       type="submit"
@@ -55,7 +69,11 @@ const Send = () => {
       className={isFirstQuestion ? "first" : "not-first"}
       disabled={isInputValueEmpty}
     >
-      {isFirstQuestion ? <span>Give It a Try</span> : <Submit />}
+      {isFirstQuestion && windowSize >= 992 ? (
+        <span>Give It a Try</span>
+      ) : (
+        <Submit />
+      )}
     </Button>
   )
 }

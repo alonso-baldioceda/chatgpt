@@ -144,33 +144,24 @@ export const AppContextProvider = ({ children }) => {
     // to clear the textarea input
     handleFormReset()
 
-    // // not first question anymore
-    // setIsFirstQuestion(false)
+    // not first question anymore
+    setIsFirstQuestion(false)
 
-    // // update stripes
-    // setStripes(newState)
+    // update stripes
+    setStripes(newState)
 
-    // // show loader
-    // setIsLoading(true)
+    // show loader
+    setIsLoading(true)
 
-    // // get the bot response & update stripes
-    // const parsedData = await handleUserInput()
-    // updateStripes(newState, botMessageId, parsedData)
+    // get the bot response & update stripes
+    const parsedData = await handleUserInput()
+    updateStripes(newState, botMessageId, parsedData)
 
-    // // hide loader
-    // setIsLoading(false)
+    // hide loader
+    setIsLoading(false)
 
-    // // clear the input value
-    // setInputValue("")
-
-    setTimeout(() => {
-      setIsLoading(true)
-      setStripes(newState)
-      updateStripes(newState, botMessageId, "parsedData")
-      setIsLoading(false)
-      setIsFirstQuestion(false)
-      setInputValue("")
-    }, 250)
+    // clear the input value
+    setInputValue("")
   }
 
   // handle enter key press
@@ -196,7 +187,8 @@ export const AppContextProvider = ({ children }) => {
 
       // move the loader to the bottom of prompts-history when stripes change
       if (LoaderRef) {
-        LoaderRef.style.top = `${ChatRef.scrollHeight}px`
+        LoaderRef.style.top = `${ChatRef.scrollHeight - 38}px`
+        console.log("moved")
       }
     }
   }
